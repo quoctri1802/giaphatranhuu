@@ -96,3 +96,11 @@ model Registration {
   status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
   createdAt   DateTime @default(now())
 }
+
+model Anniversary {
+  id          String   @id @default(cuid())
+  title       String   // Ví dụ: Giỗ Cụ Tổ, Giỗ Ông Nội...
+  dateLunar   String   // Ví dụ: 12/03
+  note        String?
+  createdAt   DateTime @default(now())
+}

@@ -23,10 +23,10 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const anniversaries = await prisma.person.findMany({
-      where: { deathDateLunar: { not: null } },
-      select: { id: true, fullName: true, deathDateLunar: true },
-      take: 10
+    const anniversaries = await prisma.anniversary.findMany({
+      select: { id: true, title: true, dateLunar: true },
+      take: 10,
+      orderBy: { createdAt: 'desc' }
     });
 
     return NextResponse.json({

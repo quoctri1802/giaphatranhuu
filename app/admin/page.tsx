@@ -11,6 +11,8 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [media, setMedia] = useState<any[]>([]);
   const [registrations, setRegistrations] = useState<any[]>([]);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [anniversaryList, setAnniversaryList] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState<any>({ totalMembers: 0, totalGenerations: 0, recentUpdates: [], anniversaries: [] });
   const [pageContent, setPageContent] = useState<any>({ home: {}, history: {} });
@@ -21,6 +23,7 @@ export default function AdminDashboard() {
   const [postForm, setPostForm] = useState({ title: '', content: '', coverImage: '' });
   const [userForm, setUserForm] = useState({ email: '', password: '', name: '', role: 'EDITOR' });
   const [mediaForm, setMediaForm] = useState({ title: '', url: '', type: 'IMAGE', category: 'GIO_TOC' });
+  const [anniversaryForm, setAnniversaryForm] = useState({ title: '', dateLunar: '', note: '' });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState('');
@@ -54,6 +57,9 @@ export default function AdminDashboard() {
       const regRes = await fetch('/api/register');
       setRegistrations(await regRes.json());
 
+      const annivRes = await fetch('/api/anniversaries');
+      setAnniversaryList(await annivRes.json());
+
       if (userData.role === 'ADMIN') {
         const usersRes = await fetch('/api/users');
         setUsers(await usersRes.json());
@@ -69,6 +75,19 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleAnniversarySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/anniversaries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(anniversaryForm),
+    });
+    if (res.ok) { 
+      setAnniversaryForm({ title: '', dateLunar: '', note: '' });
+      fetchData(); 
+    }
+  };
 
   const handleMediaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -334,52 +353,46 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Tab Content: Anniversaries Management */}
+      {/* Tab Content: Anniversaries Management - Standalone */}
       {activeTab === 'anniversaries' && (
         <div className="glass animate-fade" style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
-            <h3>Quản lý Ngày Giỗ Dòng Họ</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Nhập ngày giỗ theo định dạng <strong>Ngày/Tháng</strong> (VD: 12/03)</p>
+          <div style={{ marginBottom: '3rem' }}>
+            <h3 style={{ marginBottom: '1.5rem' }}>Thêm Ngày Giỗ Mới</h3>
+            <form onSubmit={handleAnniversarySubmit} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              <div style={{ flex: 2 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.4rem' }}>Nội dung/Tên ngày giỗ</label>
+                <input placeholder="Ví dụ: Giỗ Cụ Tổ, Giỗ Ông..." required value={anniversaryForm.title} onChange={e => setAnniversaryForm({...anniversaryForm, title: e.target.value})} style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ddd' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.4rem' }}>Ngày Âm lịch (dd/mm)</label>
+                <input placeholder="VD: 12/03" required value={anniversaryForm.dateLunar} onChange={e => setAnniversaryForm({...anniversaryForm, dateLunar: e.target.value})} style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid #ddd' }} />
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ padding: '0.6rem 2rem' }}>Lưu Ngày Giỗ</button>
+            </form>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+
+          <h3>Danh sách Ngày Giỗ đã thêm</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1.5rem' }}>
             <thead>
               <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--accent-color)' }}>
-                <th style={{ padding: '1rem' }}>Thành viên</th>
-                <th style={{ padding: '1rem' }}>Đời thứ</th>
-                <th style={{ padding: '1rem' }}>Ngày giỗ Âm lịch</th>
-                <th style={{ padding: '1rem' }}>Trạng thái</th>
+                <th style={{ padding: '1rem' }}>Nội dung</th>
+                <th style={{ padding: '1rem' }}>Ngày Âm lịch</th>
+                <th style={{ padding: '1rem' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {members.map(m => (
-                <tr key={m.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
-                  <td style={{ padding: '1rem', fontWeight: 600 }}>{m.fullName}</td>
-                  <td style={{ padding: '1rem' }}>{m.generation}</td>
+              {anniversaryList.map(a => (
+                <tr key={a.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
+                  <td style={{ padding: '1rem', fontWeight: 600 }}>{a.title}</td>
+                  <td style={{ padding: '1rem', color: 'var(--secondary-color)', fontWeight: 700 }}>{a.dateLunar}</td>
                   <td style={{ padding: '1rem' }}>
-                    <input 
-                      defaultValue={m.deathDateLunar || ''} 
-                      onBlur={async (e) => {
-                        const val = e.target.value;
-                        if (val !== m.deathDateLunar) {
-                          await fetch('/api/members', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ ...m, deathDateLunar: val })
-                          });
-                          fetchData();
-                        }
-                      }}
-                      placeholder="dd/mm" 
-                      style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid #ddd', width: '100px' }} 
-                    />
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span style={{ fontSize: '0.8rem', color: m.deathDateLunar ? '#10b981' : '#ef4444' }}>
-                      {m.deathDateLunar ? '● Đã có' : '○ Chưa có'}
-                    </span>
+                    <button onClick={async () => { if(confirm('Xóa ngày giỗ này?')) { await fetch(`/api/anniversaries?id=${a.id}`, {method:'DELETE'}); fetchData(); } }} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 600 }}>Xóa</button>
                   </td>
                 </tr>
               ))}
+              {anniversaryList.length === 0 && (
+                <tr><td colSpan={3} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Chưa có ngày giỗ nào được thêm.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
