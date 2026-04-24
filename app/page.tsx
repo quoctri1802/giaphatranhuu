@@ -1,15 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowRight, BookOpen, Users, Shield } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Shield, Clock, Calendar } from "lucide-react";
 
 export default function Home() {
   const [content, setContent] = useState<any>({});
+  const [anniversaries, setAnniversaries] = useState<any[]>([]);
 
   useEffect(() => {
     fetch('/api/content?page=home')
       .then(res => res.json())
       .then(data => setContent(data.data || {}));
+
+    fetch('/api/admin/stats')
+      .then(res => res.json())
+      .then(data => setAnniversaries(data.anniversaries || []));
   }, []);
 
   return (
@@ -44,40 +49,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Main Content Grid */}
       <section className="container" style={{ padding: '8rem 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
-          <h2 style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>Hệ Thống Gia Phả Hiện Đại</h2>
-          <div style={{ width: '80px', height: '4px', backgroundColor: 'var(--accent-color)', margin: '0 auto 2rem' }}></div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto' }}>
-            {content.introContent || 'Giải pháp công nghệ nhằm bảo tồn các giá trị truyền thống dòng tộc cho muôn đời sau.'}
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
-          <div className="glass card" style={{ padding: '4rem 2rem', textAlign: 'center', transition: 'var(--transition)' }}>
-            <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.1)', width: '70px', height: '70px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '1px solid var(--accent-color)' }}>
-              <Users color="var(--accent-color)" size={32} />
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '4rem' }}>
+          
+          {/* Left: Features */}
+          <div>
+            <div style={{ marginBottom: '5rem' }}>
+              <h2 style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>Hệ Thống Gia Phả Hiện Đại</h2>
+              <div style={{ width: '80px', height: '4px', backgroundColor: 'var(--accent-color)', marginBottom: '2rem' }}></div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem' }}>
+                {content.introContent || 'Giải pháp công nghệ nhằm bảo tồn các giá trị truyền thống dòng tộc cho muôn đời sau.'}
+              </p>
             </div>
-            <h3 style={{ marginBottom: '1.2rem', fontSize: '1.8rem' }}>Kết Nối Thành Viên</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Dễ dàng tìm kiếm và tra cứu thông tin về các chi nhánh, thành viên trong dòng tộc Tộc Trần Hữu qua các thế hệ.</p>
+
+            <div style={{ display: 'grid', gap: '3rem' }}>
+              <div className="glass" style={{ padding: '3rem', display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+                <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.1)', width: '60px', height: '60px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid var(--accent-color)' }}>
+                  <Users color="var(--accent-color)" size={28} />
+                </div>
+                <div>
+                  <h3 style={{ marginBottom: '1rem' }}>Kết Nối Thành Viên</h3>
+                  <p style={{ color: 'var(--text-secondary)' }}>Dễ dàng tìm kiếm và tra cứu thông tin về các chi nhánh, thành viên trong dòng tộc qua các thế hệ.</p>
+                </div>
+              </div>
+
+              <div className="glass" style={{ padding: '3rem', display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+                <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.1)', width: '60px', height: '60px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid var(--accent-color)' }}>
+                  <BookOpen color="var(--accent-color)" size={28} />
+                </div>
+                <div>
+                  <h3 style={{ marginBottom: '1rem' }}>Số Hóa Tư Liệu</h3>
+                  <p style={{ color: 'var(--text-secondary)' }}>Lưu trữ tiểu sử, sự nghiệp và những đóng góp của các bậc tiền nhân một cách khoa học và bền vững.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="glass card" style={{ padding: '4rem 2rem', textAlign: 'center', transition: 'var(--transition)' }}>
-            <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.1)', width: '70px', height: '70px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '1px solid var(--accent-color)' }}>
-              <BookOpen color="var(--accent-color)" size={32} />
+          {/* Right: Anniversaries Sidebar */}
+          <div>
+            <div className="glass" style={{ padding: '2.5rem', border: '2px solid var(--accent-color)' }}>
+              <h3 className="solemn-font" style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                <Calendar color="var(--secondary-color)" /> Ngày Giỗ Sắp Tới
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {anniversaries.length > 0 ? anniversaries.map(a => (
+                  <div key={a.id} style={{ paddingBottom: '1rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.3rem' }}>{a.fullName}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--secondary-color)', fontWeight: 600 }}>
+                      <span>Âm lịch: {a.deathDateLunar}</span>
+                    </div>
+                  </div>
+                )) : (
+                  <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Đang cập nhật dữ liệu ngày giỗ...</p>
+                )}
+              </div>
+              <div style={{ marginTop: '2.5rem', padding: '1.5rem', backgroundColor: 'rgba(197, 160, 89, 0.05)', borderRadius: '12px', fontSize: '0.9rem', color: 'var(--primary-color)', fontStyle: 'italic' }}>
+                "Cây có cội mới nảy cành xanh lá, nước có nguồn mới bể rộng sông sâu."
+              </div>
             </div>
-            <h3 style={{ marginBottom: '1.2rem', fontSize: '1.8rem' }}>Số Hóa Tư Liệu</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Lưu trữ tiểu sử, sự nghiệp và những đóng góp của các bậc tiền nhân một cách khoa học và bền vững.</p>
           </div>
 
-          <div className="glass card" style={{ padding: '4rem 2rem', textAlign: 'center', transition: 'var(--transition)' }}>
-            <div style={{ backgroundColor: 'rgba(197, 160, 89, 0.1)', width: '70px', height: '70px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '1px solid var(--accent-color)' }}>
-              <Shield color="var(--accent-color)" size={32} />
-            </div>
-            <h3 style={{ marginBottom: '1.2rem', fontSize: '1.8rem' }}>Bảo Mật Gia Tộc</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>Hệ thống phân quyền nghiêm ngặt, đảm bảo thông tin nội bộ gia tộc chỉ dành cho những người trong dòng họ.</p>
-          </div>
         </div>
       </section>
     </div>

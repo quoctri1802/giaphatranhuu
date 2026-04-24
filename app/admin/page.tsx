@@ -4,20 +4,23 @@ import { useState, useEffect, useCallback } from 'react';
 import { Users, UserPlus, FileEdit, Settings, Search, X, ShieldCheck, LogOut, Clock } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, members, posts, users
+  const [activeTab, setActiveTab] = useState('overview'); // overview, members, posts, users, media, requests
   const [showForm, setShowForm] = useState(false);
   const [members, setMembers] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [media, setMedia] = useState<any[]>([]);
+  const [registrations, setRegistrations] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
-  const [stats, setStats] = useState({ totalMembers: 0, totalGenerations: 0, recentUpdates: [] });
+  const [stats, setStats] = useState<any>({ totalMembers: 0, totalGenerations: 0, recentUpdates: [], anniversaries: [] });
   const [pageContent, setPageContent] = useState<any>({ home: {}, history: {} });
   const [loading, setLoading] = useState(true);
 
   // Form states
-  const [memberForm, setMemberForm] = useState({ fullName: '', otherName: '', gender: 'NAM', generation: '', branch: '', bio: '', parentId: '', spouseId: '', avatarUrl: '' });
+  const [memberForm, setMemberForm] = useState({ fullName: '', otherName: '', gender: 'NAM', generation: '', branch: '', bio: '', parentId: '', spouseId: '', avatarUrl: '', deathDateLunar: '' });
   const [postForm, setPostForm] = useState({ title: '', content: '', coverImage: '' });
   const [userForm, setUserForm] = useState({ email: '', password: '', name: '', role: 'EDITOR' });
+  const [mediaForm, setMediaForm] = useState({ title: '', url: '', type: 'IMAGE', category: 'GIO_TOC' });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState('');
@@ -45,6 +48,12 @@ export default function AdminDashboard() {
       const histData = await histRes.json();
       setPageContent({ home: homeData.data, history: histData.data });
 
+      const mediaRes = await fetch('/api/media');
+      setMedia(await mediaRes.json());
+
+      const regRes = await fetch('/api/register');
+      setRegistrations(await regRes.json());
+
       if (userData.role === 'ADMIN') {
         const usersRes = await fetch('/api/users');
         setUsers(await usersRes.json());
@@ -60,6 +69,16 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleMediaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/media', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mediaForm),
+    });
+    if (res.ok) { alert('Đã thêm vào thư viện!'); setShowForm(false); fetchData(); }
+  };
 
   const handleMemberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,6 +170,8 @@ export default function AdminDashboard() {
         <button onClick={() => setActiveTab('overview')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'overview' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'overview' ? '2px solid var(--primary-color)' : 'none' }}>Tổng quan</button>
         <button onClick={() => setActiveTab('members')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'members' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'members' ? '2px solid var(--primary-color)' : 'none' }}>Thành viên</button>
         <button onClick={() => setActiveTab('posts')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'posts' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'posts' ? '2px solid var(--primary-color)' : 'none' }}>Bài viết & Tin tức</button>
+        <button onClick={() => setActiveTab('media')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'media' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'media' ? '2px solid var(--primary-color)' : 'none' }}>Thư viện</button>
+        <button onClick={() => setActiveTab('requests')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'requests' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'requests' ? '2px solid var(--primary-color)' : 'none' }}>Yêu cầu ({registrations.filter(r => r.status === 'PENDING').length})</button>
         <button onClick={() => setActiveTab('content')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'content' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'content' ? '2px solid var(--primary-color)' : 'none' }}>Nội dung trang</button>
         {user?.role === 'ADMIN' && (
           <button onClick={() => setActiveTab('users')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'users' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'users' ? '2px solid var(--primary-color)' : 'none' }}>Tài khoản</button>
@@ -174,14 +195,28 @@ export default function AdminDashboard() {
               <div><div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Bài viết</div><div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{posts.length}</div></div>
             </div>
           </div>
-          <div className="glass" style={{ padding: '2rem' }}>
-            <h3 style={{ marginBottom: '2rem' }}><Clock size={20} /> Cập nhật mới nhất</h3>
-            {stats.recentUpdates.map((m: any) => (
-              <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 0', borderBottom: '1px solid var(--accent-color)' }}>
-                <span>{m.fullName}</span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(m.updatedAt).toLocaleDateString()}</span>
-              </div>
-            ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            <div className="glass" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '2rem' }}><Clock size={20} /> Cập nhật mới nhất</h3>
+              {stats.recentUpdates.map((m: any) => (
+                <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 0', borderBottom: '1px solid var(--accent-color)' }}>
+                  <span>{m.fullName}</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{new Date(m.updatedAt).toLocaleDateString()}</span>
+                </div>
+              ))}
+            </div>
+            <div className="glass" style={{ padding: '2rem' }}>
+              <h3 style={{ marginBottom: '2rem' }}><Clock size={20} /> Ngày giỗ sắp tới (Âm lịch)</h3>
+              {stats.anniversaries?.map((a: any) => (
+                <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 0', borderBottom: '1px solid var(--accent-color)' }}>
+                  <span style={{ fontWeight: 600 }}>{a.fullName}</span>
+                  <span style={{ color: 'var(--secondary-color)', fontWeight: 700 }}>{a.deathDateLunar}</span>
+                </div>
+              ))}
+              {(!stats.anniversaries || stats.anniversaries.length === 0) && (
+                <div style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>Chưa có dữ liệu ngày giỗ.</div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -276,7 +311,57 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Tab Content: Users */}
+      {/* Tab Content: Media */}
+      {activeTab === 'media' && (
+        <div className="animate-fade">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '2rem' }}>
+            <div className="glass" onClick={() => { setShowForm(true); }} style={{ border: '2px dashed var(--accent-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '150px', cursor: 'pointer' }}>
+              <UserPlus size={24} />
+              <span style={{ marginTop: '0.5rem', fontWeight: 600 }}>Thêm ảnh/tư liệu</span>
+            </div>
+            {media.map(m => (
+              <div key={m.id} className="glass" style={{ overflow: 'hidden' }}>
+                <img src={m.url} alt={m.title} style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
+                <div style={{ padding: '0.8rem' }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.title}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{m.category}</div>
+                  <button onClick={async () => { if(confirm('Xóa ảnh này?')) { await fetch(`/api/media?id=${m.id}`, {method:'DELETE'}); fetchData(); } }} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontSize: '0.8rem', marginTop: '0.5rem' }}>Xóa</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab Content: Requests */}
+      {activeTab === 'requests' && (
+        <div className="glass animate-fade" style={{ padding: '2rem' }}>
+          <h3>Yêu cầu từ con cháu</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '2rem' }}>
+            <thead>
+              <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--accent-color)' }}>
+                <th style={{ padding: '1rem' }}>Họ tên</th>
+                <th style={{ padding: '1rem' }}>Email/SĐT</th>
+                <th style={{ padding: '1rem' }}>Nội dung yêu cầu</th>
+                <th style={{ padding: '1rem' }}>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {registrations.map(r => (
+                <tr key={r.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
+                  <td style={{ padding: '1rem', fontWeight: 600 }}>{r.fullName}</td>
+                  <td style={{ padding: '1rem' }}>{r.email}<br/><span style={{fontSize:'0.8rem'}}>{r.phone}</span></td>
+                  <td style={{ padding: '1rem', maxWidth: '300px' }}>{r.message}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <span style={{ backgroundColor: r.status === 'PENDING' ? '#fef9c3' : '#dcfce7', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem' }}>{r.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {activeTab === 'users' && user?.role === 'ADMIN' && (
         <div className="glass animate-fade" style={{ padding: '2rem' }}>
           <h3>Quản lý tài khoản truy cập</h3>
@@ -311,11 +396,27 @@ export default function AdminDashboard() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
           <div className="glass" style={{ width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '2.5rem', backgroundColor: 'white' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <h3>{activeTab === 'posts' ? 'Tạo bài viết mới' : activeTab === 'users' ? 'Tạo tài khoản mới' : 'Thêm thành viên gia phả'}</h3>
+              <h3>
+                {activeTab === 'posts' ? 'Tạo bài viết mới' : 
+                 activeTab === 'media' ? 'Thêm vào thư viện' :
+                 activeTab === 'users' ? 'Tài khoản' : 'Thành viên gia phả'}
+              </h3>
               <button onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X /></button>
             </div>
 
-            {activeTab === 'posts' ? (
+            {activeTab === 'media' ? (
+              <form onSubmit={handleMediaSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                <input placeholder="Tiêu đề ảnh/tư liệu" required value={mediaForm.title} onChange={e => setMediaForm({...mediaForm, title: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <input placeholder="URL hình ảnh" required value={mediaForm.url} onChange={e => setMediaForm({...mediaForm, url: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <select value={mediaForm.category} onChange={e => setMediaForm({...mediaForm, category: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }}>
+                  <option value="GIO_TOC">Lễ Giỗ Tộc</option>
+                  <option value="KHANH_THANH">Khánh thành Nhà thờ</option>
+                  <option value="TU_LIEU_CO">Tư liệu cổ</option>
+                  <option value="HOAT_DONG">Hoạt động khác</option>
+                </select>
+                <button type="submit" className="btn btn-primary">Thêm vào thư viện</button>
+              </form>
+            ) : activeTab === 'posts' ? (
               <form onSubmit={handlePostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <input placeholder="Tiêu đề bài viết" required value={postForm.title} onChange={e => setPostForm({...postForm, title: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                 <input placeholder="URL ảnh bìa (Tùy chọn)" value={postForm.coverImage} onChange={e => setPostForm({...postForm, coverImage: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
@@ -347,7 +448,10 @@ export default function AdminDashboard() {
                   </select>
                   <input placeholder="Đời thứ" type="number" required value={memberForm.generation} onChange={e => setMemberForm({...memberForm, generation: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                 </div>
-                <input placeholder="URL Ảnh chân dung (Tùy chọn)" value={memberForm.avatarUrl} onChange={e => setMemberForm({...memberForm, avatarUrl: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <input placeholder="URL Ảnh chân dung (Tùy chọn)" value={memberForm.avatarUrl} onChange={e => setMemberForm({...memberForm, avatarUrl: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                  <input placeholder="Ngày giỗ Âm lịch (vd: 12/03)" value={memberForm.deathDateLunar} onChange={e => setMemberForm({...memberForm, deathDateLunar: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <select value={memberForm.parentId} onChange={e => setMemberForm({...memberForm, parentId: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }}>
                     <option value="">-- Chọn Cha/Mẹ --</option>

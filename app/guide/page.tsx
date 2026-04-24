@@ -70,14 +70,14 @@ export default function GuidePage() {
               <Phone color="var(--secondary-color)" />
               <div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hotline</div>
-                <div style={{ fontWeight: 700 }}>0905.XXX.XXX (Ông Trần Hữu A)</div>
+                <div style={{ fontWeight: 700 }}>0905.XXX.XXX (Ông Trần Hữu Viên)</div>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <Mail color="var(--secondary-color)" />
               <div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Email</div>
-                <div style={{ fontWeight: 700 }}>lienhe@tranhuunamo.com</div>
+                <div style={{ fontWeight: 700 }}>admin@tranhuu.com</div>
               </div>
             </div>
           </div>
