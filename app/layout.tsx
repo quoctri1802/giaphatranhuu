@@ -20,9 +20,24 @@ export default function RootLayout({
     <html lang="vi">
       <body>
         <header className="glass" style={{ position: 'fixed', top: '1rem', left: '1rem', right: '1rem', zIndex: 100, padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-color)' }}>
-            TỘC TRẦN HỮU <span style={{ color: 'var(--secondary-color)' }}>NAM Ô 1</span>
-          </div>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <div className="logo-text" style={{ 
+              fontSize: '1.6rem', 
+              fontWeight: 900, 
+              background: 'linear-gradient(135deg, #8b0000 0%, #c5a059 50%, #8b0000 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center'
+            }}>
+              TỘC TRẦN HỮU <span style={{ opacity: 0.8, fontSize: '1.2rem', fontWeight: 600 }}>NAM Ô 1</span>
+            </div>
+          </a>
           <nav style={{ display: 'flex', gap: '2rem', fontWeight: 600, alignItems: 'center' }}>
             <a href="/">Trang chủ</a>
             <a href="/tree">Cây gia phả</a>
