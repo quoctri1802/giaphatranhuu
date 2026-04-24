@@ -20,11 +20,11 @@ export default function Home() {
   return (
     <div className="animate-fade">
       {/* Hero Section */}
-      <section className="hero-section" style={{ 
-        height: '85vh', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
+      <section className="hero-section" style={{
+        height: '85vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
         background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), #1a365d url("/hero-bg.png") center/contain no-repeat',
@@ -33,22 +33,22 @@ export default function Home() {
         margin: '0',
         padding: '2rem'
       }}>
-        <h1 className="hero-title solemn-font" style={{ 
-          color: 'white', 
-          fontSize: '4.5rem', 
-          marginBottom: '1.5rem', 
+        <h1 className="hero-title solemn-font" style={{
+          color: 'white',
+          fontSize: '4.5rem',
+          marginBottom: '1.5rem',
           textShadow: '0 4px 10px rgba(0,0,0,0.3)'
         }}>
-          {content.heroTitle || 'Gia Phả Tộc Trần Hữu'}
+          {content.heroTitle || ''}
         </h1>
-        <p style={{ 
-          fontSize: '1.5rem', 
-          maxWidth: '800px', 
-          marginBottom: '3rem', 
-          opacity: 0.9, 
-          lineHeight: '1.6' 
+        <p style={{
+          fontSize: '1.5rem',
+          maxWidth: '800px',
+          marginBottom: '3rem',
+          opacity: 0.9,
+          lineHeight: '1.6'
         }}>
-          {content.heroSubtitle || 'Lưu giữ truyền thống, kết nối thế hệ tại mảnh đất Nam Ô 1 - Đà Nẵng sơn thủy hữu tình.'}
+          {content.heroSubtitle || 'Lưu giữ truyền thống, kết nối thế hệ tại mảnh đất Nam Ô 1.'}
         </p>
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           <a href="/tree" className="btn btn-primary" style={{ backgroundColor: 'var(--accent-color)', color: 'var(--primary-color)', fontSize: '1.1rem', padding: '1rem 2.5rem' }}>
@@ -63,7 +63,7 @@ export default function Home() {
       {/* Main Content Grid */}
       <section className="container" style={{ padding: '8rem 0' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '4rem' }}>
-          
+
           {/* Left: Features */}
           <div>
             <div style={{ marginBottom: '5rem' }}>
