@@ -27,7 +27,7 @@ export default function Home() {
         justifyContent: 'center', 
         alignItems: 'center',
         textAlign: 'center',
-        background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), url("https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80") center/cover',
+        background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), url("/hero-bg.png") center/cover',
         color: 'white',
         borderRadius: '0 0 60px 60px',
         margin: '0',
@@ -95,9 +95,9 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {anniversaries.length > 0 ? anniversaries.map(a => (
                   <div key={a.id} style={{ paddingBottom: '1rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                    <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.3rem' }}>{a.fullName}</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.3rem' }}>{a.title}</div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--secondary-color)', fontWeight: 600 }}>
-                      <span>Âm lịch: {a.deathDateLunar}</span>
+                      <span>Âm lịch: {a.dateLunar}</span>
                     </div>
                   </div>
                 )) : (
