@@ -16,6 +16,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<any>({ totalMembers: 0, totalGenerations: 0, recentUpdates: [], anniversaries: [] });
   const [pageContent, setPageContent] = useState<any>({ home: {}, history: {} });
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   // Form states
   const [memberForm, setMemberForm] = useState({ fullName: '', otherName: '', gender: 'NAM', generation: '', branch: '', bio: '', parentId: '', spouseId: '', avatarUrl: '', deathDateLunar: '' });
@@ -92,6 +93,7 @@ export default function AdminDashboard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -103,9 +105,13 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.url) {
         setMediaForm({ ...mediaForm, url: data.url });
+      } else {
+        alert('Lỗi: ' + (data.error || 'Không rõ nguyên nhân'));
       }
     } catch (err) {
-      alert('Lỗi khi tải ảnh lên!');
+      alert('Lỗi kết nối máy chủ khi tải ảnh!');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -534,7 +540,9 @@ export default function AdminDashboard() {
                       <input type="file" accept="image/*" id="file-upload" onChange={handleFileUpload} style={{ display: 'none' }} />
                       <label htmlFor="file-upload" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                         <UserPlus size={32} color="var(--accent-color)" />
-                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>Nhấn để chọn ảnh từ thiết bị</span>
+                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                          {uploading ? 'Đang tải ảnh lên...' : 'Nhấn để chọn ảnh từ thiết bị'}
+                        </span>
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hỗ trợ JPG, PNG, WEBP</span>
                       </label>
                     </div>
