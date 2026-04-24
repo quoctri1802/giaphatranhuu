@@ -15,24 +15,26 @@ model Person {
   id            String   @id @default(cuid())
   fullName      String
   otherName     String?
-  gender        String   // MALE, FEMALE, OTHER
+  gender        String   // MALE, FEMALE
   birthDate     DateTime?
-  deathDate     DateTime?
+  deathDate     DateTime? // Ngày giỗ Dương lịch
+  deathDateLunar String?   // Ngày giỗ Âm lịch (ví dụ: 12/03)
   bio           String?  @db.Text
   avatarUrl     String?
   generation    Int
   branch        String?  
-  posX          Float?
+  posX          Float?   // Vị trí trên cây
   posY          Float?
+  lat           Float?   // Tọa độ bản đồ (mộ phần)
+  lng           Float?
   
-  // Quan hệ huyết thống (Cha/Mẹ - Con)
+  // Quan hệ
   parents       Person[] @relation("ParentChild")
   children      Person[] @relation("ParentChild")
-  
-  // Quan hệ vợ chồng (Hỗ trợ nhiều vợ/chồng)
   spouses       Person[] @relation("SpouseRelation")
   spouseOf      Person[] @relation("SpouseRelation")
 
+  memories      Memory[]
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -65,4 +67,32 @@ model Content {
   page          String   @unique // home, history
   data          Json     // Lưu cấu trúc JSON cho các đoạn văn bản, hình ảnh
   updatedAt     DateTime @updatedAt
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  type        String   // IMAGE, VIDEO, DOCUMENT
+  category    String?  // GIO_TOC, KHANH_THANH, TU_LIEU_CO
+  createdAt   DateTime @default(now())
+}
+
+model Memory {
+  id          String   @id @default(cuid())
+  content     String   @db.Text
+  authorName  String
+  personId    String
+  person      Person   @relation(fields: [personId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Registration {
+  id          String   @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String?
+  message     String   @db.Text
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt   DateTime @default(now())
 }

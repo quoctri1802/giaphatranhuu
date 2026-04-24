@@ -28,6 +28,7 @@ export default function RootLayout({
             <a href="/tree">Cây gia phả</a>
             <a href="/history">Lịch sử</a>
             <a href="/news">Tin tức</a>
+            <a href="/gallery">Thư viện</a>
             {isLoggedIn ? (
               <a href="/admin" className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>Quản lý</a>
             ) : (

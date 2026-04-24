@@ -118,7 +118,7 @@ export default function LoginPage() {
 
         <div style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
           Bạn chưa có tài khoản? <br />
-          <a href="#" style={{ color: 'var(--secondary-color)', fontWeight: 600 }}>Liên hệ Hội đồng gia tộc</a>
+          <a href="/guide" style={{ color: 'var(--secondary-color)', fontWeight: 600 }}>Xem hướng dẫn xin cấp quyền truy cập</a>
         </div>
       </div>
     </div>

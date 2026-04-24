@@ -80,7 +80,10 @@ export default function TreePage() {
           <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', fontSize: '1.1rem' }}>
             Vì lý do bảo mật và tôn trọng quyền riêng tư của dòng họ, chỉ những thành viên đã được cấp tài khoản mới có thể xem chi tiết Cây Gia Phả.
           </p>
-          <a href="/login" className="btn btn-primary">Đăng nhập để xem</a>
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+            <a href="/login" className="btn btn-primary">Đăng nhập ngay</a>
+            <a href="/guide" className="btn btn-outline">Cách xin cấp tài khoản</a>
+          </div>
         </div>
       </div>
     );

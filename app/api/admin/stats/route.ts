@@ -23,10 +23,17 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
     });
 
+    const anniversaries = await prisma.person.findMany({
+      where: { deathDateLunar: { not: null } },
+      select: { id: true, fullName: true, deathDateLunar: true },
+      take: 10
+    });
+
     return NextResponse.json({
       totalMembers,
       totalGenerations: maxGen._max.generation || 0,
-      recentUpdates
+      recentUpdates,
+      anniversaries
     });
   } catch (error) {
     console.error('Build-time DB skip or error:', error);
