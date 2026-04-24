@@ -5,15 +5,17 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
-  if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ error: 'Database URL not configured' }, { status: 500 });
+  if (!process.env.DATABASE_URL || process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL) {
+    // Trả về dữ liệu mẫu nếu đang trong quá trình build mà không có DB
+    return NextResponse.json({ totalMembers: 0, totalGenerations: 0, recentUpdates: [] });
   }
+  
   try {
     const totalMembers = await prisma.person.count();
     
-    const generations = await prisma.person.findMany({
-      select: { generation: true },
-      distinct: ['generation'],
+    // Đếm số đời bằng cách lấy max generation
+    const maxGen = await prisma.person.aggregate({
+      _max: { generation: true }
     });
 
     const recentUpdates = await prisma.person.findMany({
@@ -23,10 +25,11 @@ export async function GET() {
 
     return NextResponse.json({
       totalMembers,
-      totalGenerations: generations.length,
+      totalGenerations: maxGen._max.generation || 0,
       recentUpdates
     });
   } catch (error) {
-    return NextResponse.json({ error: 'Lỗi khi lấy thống kê' }, { status: 500 });
+    console.error('Build-time DB skip or error:', error);
+    return NextResponse.json({ totalMembers: 0, totalGenerations: 0, recentUpdates: [] });
   }
 }
