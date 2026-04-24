@@ -194,22 +194,34 @@ export default function TreePage() {
         position: 'absolute', 
         bottom: '2rem', 
         right: '2rem', 
-        width: '280px', 
-        padding: '1.5rem',
-        zIndex: 10
+        width: '240px', 
+        padding: '1.2rem',
+        zIndex: 10,
+        fontSize: '0.85rem'
       }}>
-        <h4 style={{ marginBottom: '1rem', color: 'var(--primary-color)' }}>Thông tin hiển thị</h4>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.9rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '15px', height: '15px', backgroundColor: 'var(--primary-color)', borderRadius: '3px' }}></div>
-            <span>Thủy Tổ (Đời 1)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '15px', height: '15px', backgroundColor: 'white', border: '1px solid var(--accent-color)', borderRadius: '3px' }}></div>
-            <span>Hậu duệ</span>
-          </div>
-          <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            * Click vào từng người để xem tiểu sử chi tiết.
+        <h4 style={{ marginBottom: '1rem', color: 'var(--primary-color)' }}>Chú thích đời tộc</h4>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          {[
+            { label: 'Đời 1 (Thủy Tổ)', color: '#c5a059' },
+            { label: 'Đời 2', color: '#9c4221' },
+            { label: 'Đời 3', color: '#1a365d' },
+            { label: 'Đời 4', color: '#2f855a' },
+            { label: 'Đời 5', color: '#6b46c1' },
+            { label: 'Nàng dâu / Con gái', color: '#fb7185', isBorder: true },
+          ].map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              <div style={{ 
+                width: '18px', 
+                height: '18px', 
+                backgroundColor: item.isBorder ? '#fff1f2' : item.color, 
+                border: `2px solid ${item.color}`,
+                borderRadius: '4px' 
+              }}></div>
+              <span style={{ fontWeight: 600 }}>{item.label}</span>
+            </div>
+          ))}
+          <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+            * Click để xem tiểu sử.
           </div>
         </div>
       </div>

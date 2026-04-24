@@ -21,6 +21,33 @@ export async function GET() {
     const edges: any[] = [];
     const processedSpouses = new Set();
 
+    const getGenerationStyle = (gen: number, gender: string) => {
+      const colors = [
+        '#c5a059', // Đời 1: Vàng kim
+        '#9c4221', // Đời 2: Đỏ son
+        '#1a365d', // Đời 3: Xanh navy
+        '#2f855a', // Đời 4: Xanh lá
+        '#6b46c1', // Đời 5: Tím
+        '#2b6cb0', // Đời 6: Xanh dương
+        '#c05621', // Đời 7: Cam đất
+        '#4a5568', // Đời 8: Xám chì
+        '#2d3748', // Đời 9: Đen
+      ];
+      const baseColor = colors[(gen - 1) % colors.length];
+      
+      return {
+        background: gender === 'NỮ' ? '#fff1f2' : baseColor,
+        color: gender === 'NỮ' ? 'var(--text-primary)' : 'white',
+        border: `3px solid ${gender === 'NỮ' ? '#fb7185' : baseColor}`,
+        borderRadius: '12px',
+        padding: '12px',
+        width: 180,
+        textAlign: 'center',
+        boxShadow: 'var(--shadow-md)',
+        fontWeight: 700
+      };
+    };
+
     members.forEach((member) => {
       // Xác định vị trí X: Nếu là vợ/chồng thì đẩy sang phải một chút
       const isSpouse = members.some(m => m.spouses.some(s => s.id === member.id) && m.generation === member.generation && m.id < member.id);
@@ -28,23 +55,14 @@ export async function GET() {
       
       const position = { 
         x: member.posX !== null ? member.posX : (Math.random() * 100) + xOffset, 
-        y: member.posY !== null ? member.posY : (member.generation - 1) * 180 
+        y: member.posY !== null ? member.posY : (member.generation - 1) * 220 
       };
 
       nodes.push({
         id: member.id,
-        data: { label: `${member.fullName} (Đời ${member.generation})` },
+        data: { label: `${member.fullName}\n(Đời ${member.generation})` },
         position,
-        style: { 
-          background: member.gender === 'NỮ' ? '#fff1f2' : (member.generation === 1 ? 'var(--primary-color)' : 'white'), 
-          color: (member.generation === 1 && member.gender !== 'NỮ') ? 'white' : 'var(--text-primary)',
-          border: `2px solid ${member.gender === 'NỮ' ? '#fb7185' : (member.generation === 1 ? 'var(--secondary-color)' : 'var(--accent-color)')}`,
-          borderRadius: '12px',
-          padding: '10px',
-          width: 180,
-          textAlign: 'center',
-          boxShadow: 'var(--shadow-sm)'
-        },
+        style: getGenerationStyle(member.generation, member.gender),
       });
 
       // Kết nối Cha Mẹ -> Con
