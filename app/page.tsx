@@ -21,43 +21,40 @@ export default function Home() {
     <div className="animate-fade">
       {/* Hero Section */}
       <section className="hero-section" style={{ 
-        height: '90vh', 
+        height: '85vh', 
         display: 'flex', 
         flexDirection: 'column', 
         justifyContent: 'center', 
         alignItems: 'center',
         textAlign: 'center',
-        background: 'linear-gradient(rgba(255, 255, 255, 0.1), rgba(26, 54, 93, 0.2)), url("/hero-bg.png") top center/cover',
-        color: 'var(--primary-color)',
+        background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), url("/hero-bg.png") center/cover',
+        color: 'white',
         borderRadius: '0 0 60px 60px',
         margin: '0',
-        padding: '2rem',
-        borderBottom: '5px solid var(--accent-color)'
+        padding: '2rem'
       }}>
         <h1 className="hero-title solemn-font" style={{ 
-          color: '#8b0000', 
-          fontSize: '5rem', 
-          marginBottom: '1rem', 
-          textShadow: '2px 2px 0px #c5a059, 4px 4px 10px rgba(0,0,0,0.2)',
-          letterSpacing: '2px'
+          color: 'white', 
+          fontSize: '4.5rem', 
+          marginBottom: '1.5rem', 
+          textShadow: '0 4px 10px rgba(0,0,0,0.3)'
         }}>
-          {content.heroTitle || 'Tộc Trần Hữu'}
+          {content.heroTitle || 'Gia Phả Tộc Trần Hữu'}
         </h1>
-        <p className="solemn-font" style={{ 
-          fontSize: '1.6rem', 
+        <p style={{ 
+          fontSize: '1.5rem', 
           maxWidth: '800px', 
-          marginBottom: '3.5rem', 
-          color: '#4a3728',
-          fontWeight: 600,
-          lineHeight: '1.4'
+          marginBottom: '3rem', 
+          opacity: 0.9, 
+          lineHeight: '1.6' 
         }}>
-          {content.heroSubtitle || 'Uống nước nhớ nguồn - Tôn kính tổ tiên'}
+          {content.heroSubtitle || 'Lưu giữ truyền thống, kết nối thế hệ tại mảnh đất Nam Ô 1 - Đà Nẵng sơn thủy hữu tình.'}
         </p>
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <a href="/tree" className="btn btn-primary" style={{ backgroundColor: '#8b0000', color: '#fff', fontSize: '1.1rem', padding: '1rem 2.5rem', border: '2px solid #c5a059' }}>
+          <a href="/tree" className="btn btn-primary" style={{ backgroundColor: 'var(--accent-color)', color: 'var(--primary-color)', fontSize: '1.1rem', padding: '1rem 2.5rem' }}>
             Xem Cây Gia Phả <ArrowRight size={20} />
           </a>
-          <a href="/history" className="btn btn-outline" style={{ borderColor: '#8b0000', color: '#8b0000', fontSize: '1.1rem', padding: '1rem 2.5rem', fontWeight: 700 }}>
+          <a href="/history" className="btn btn-outline" style={{ borderColor: 'white', color: 'white', fontSize: '1.1rem', padding: '1rem 2.5rem' }}>
             Tìm hiểu Lịch sử
           </a>
         </div>
