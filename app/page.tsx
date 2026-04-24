@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ArrowRight, BookOpen, Users, Shield, Clock, Calendar } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Shield, Calendar } from "lucide-react";
 
 export default function Home() {
   const [content, setContent] = useState<any>({});
@@ -19,35 +19,24 @@ export default function Home() {
 
   return (
     <div className="animate-fade">
-      {/* Hero Section */}
-      <section className="hero-section" style={{
-        height: '85vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
+      {/* Hero Section - Original Design */}
+      <section className="hero-section" style={{ 
+        height: '85vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
         alignItems: 'center',
         textAlign: 'center',
-        background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), #1a365d url("/hero-bg.png") center/contain no-repeat',
+        background: 'linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.8)), url("https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80") center/cover',
         color: 'white',
         borderRadius: '0 0 60px 60px',
         margin: '0',
         padding: '2rem'
       }}>
-        <h1 className="hero-title solemn-font" style={{
-          color: 'white',
-          fontSize: '4.5rem',
-          marginBottom: '1.5rem',
-          textShadow: '0 4px 10px rgba(0,0,0,0.3)'
-        }}>
-          {content.heroTitle || ''}
+        <h1 className="hero-title solemn-font" style={{ color: 'white', fontSize: '4.5rem', marginBottom: '1.5rem', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+          {content.heroTitle || 'Gia Phả Tộc Trần Hữu'}
         </h1>
-        <p style={{
-          fontSize: '1.5rem',
-          maxWidth: '800px',
-          marginBottom: '3rem',
-          opacity: 0.9,
-          lineHeight: '1.6'
-        }}>
+        <p style={{ fontSize: '1.5rem', maxWidth: '800px', marginBottom: '3rem', opacity: 0.9, lineHeight: '1.6' }}>
           {content.heroSubtitle || 'Lưu giữ truyền thống, kết nối thế hệ tại mảnh đất Nam Ô 1.'}
         </p>
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -63,7 +52,7 @@ export default function Home() {
       {/* Main Content Grid */}
       <section className="container" style={{ padding: '8rem 0' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '4rem' }}>
-
+          
           {/* Left: Features */}
           <div>
             <div style={{ marginBottom: '5rem' }}>
@@ -114,9 +103,6 @@ export default function Home() {
                 )) : (
                   <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>Đang cập nhật dữ liệu ngày giỗ...</p>
                 )}
-              </div>
-              <div style={{ marginTop: '2.5rem', padding: '1.5rem', backgroundColor: 'rgba(197, 160, 89, 0.05)', borderRadius: '12px', fontSize: '0.9rem', color: 'var(--primary-color)', fontStyle: 'italic' }}>
-                "Cây có cội mới nảy cành xanh lá, nước có nguồn mới bể rộng sông sâu."
               </div>
             </div>
           </div>
