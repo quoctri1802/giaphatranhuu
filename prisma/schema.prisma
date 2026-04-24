@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Person {
+  id            String   @id @default(cuid())
+  fullName      String
+  otherName     String?
+  gender        String   // MALE, FEMALE, OTHER
+  birthDate     DateTime?
+  deathDate     DateTime?
+  bio           String?  @db.Text
+  avatarUrl     String?
+  generation    Int
+  branch        String?  
+  
+  // Quan hệ huyết thống (Cha/Mẹ - Con)
+  parents       Person[] @relation("ParentChild")
+  children      Person[] @relation("ParentChild")
+  
+  // Quan hệ vợ chồng (Hỗ trợ nhiều vợ/chồng)
+  spouses       Person[] @relation("SpouseRelation")
+  spouseOf      Person[] @relation("SpouseRelation")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String?
+  role          String   @default("VIEWER") // ADMIN, EDITOR, VIEWER
+  avatarUrl     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Post {
+  id            String   @id @default(cuid())
+  title         String
+  content       String   @db.Text
+  excerpt       String?
+  coverImage    String?
+  authorId      String
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Content {
+  id            String   @id @default(cuid())
+  page          String   @unique // home, history
+  data          Json     // Lưu cấu trúc JSON cho các đoạn văn bản, hình ảnh
+  updatedAt     DateTime @updatedAt
+}
