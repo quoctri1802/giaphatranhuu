@@ -93,6 +93,12 @@ export default function AdminDashboard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Kiểm tra dung lượng (Vercel giới hạn 4.5MB cho serverless function)
+    if (file.size > 4.5 * 1024 * 1024) {
+      alert('Ảnh quá lớn (trên 4.5MB). Vui lòng giảm dung lượng ảnh hoặc chọn ảnh khác để phù hợp với giới hạn của Vercel.');
+      return;
+    }
+
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -106,10 +112,10 @@ export default function AdminDashboard() {
       if (data.url) {
         setMediaForm({ ...mediaForm, url: data.url });
       } else {
-        alert('Lỗi: ' + (data.error || 'Không rõ nguyên nhân'));
+        alert('Lỗi Upload: ' + (data.error || 'Không rõ nguyên nhân'));
       }
     } catch (err) {
-      alert('Lỗi kết nối máy chủ khi tải ảnh!');
+      alert('Lỗi kết nối khi tải ảnh lên!');
     } finally {
       setUploading(false);
     }
@@ -117,12 +123,24 @@ export default function AdminDashboard() {
 
   const handleMediaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/media', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mediaForm),
-    });
-    if (res.ok) { alert('Đã thêm vào thư viện!'); setShowForm(false); fetchData(); }
+    try {
+      const res = await fetch('/api/media', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mediaForm),
+      });
+      const data = await res.json();
+      if (res.ok) { 
+        alert('Đã thêm vào thư viện thành công!'); 
+        setShowForm(false); 
+        setMediaForm({ title: '', url: '', type: 'IMAGE', category: 'GIO_TOC' });
+        fetchData(); 
+      } else {
+        alert('Lỗi khi lưu vào DB: ' + (data.error || 'Không thể lưu thông tin ảnh'));
+      }
+    } catch (err) {
+      alert('Lỗi mạng khi đang lưu vào thư viện!');
+    }
   };
 
   const handleMemberSubmit = async (e: React.FormEvent) => {
