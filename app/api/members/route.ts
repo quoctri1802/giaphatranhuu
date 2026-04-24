@@ -25,11 +25,16 @@ export async function GET() {
       // Xác định vị trí X: Nếu là vợ/chồng thì đẩy sang phải một chút
       const isSpouse = members.some(m => m.spouses.some(s => s.id === member.id) && m.generation === member.generation && m.id < member.id);
       const xOffset = isSpouse ? 200 : 0;
+      
+      const position = { 
+        x: member.posX !== null ? member.posX : (Math.random() * 100) + xOffset, 
+        y: member.posY !== null ? member.posY : (member.generation - 1) * 180 
+      };
 
       nodes.push({
         id: member.id,
         data: { label: `${member.fullName} (Đời ${member.generation})` },
-        position: { x: (Math.random() * 100) + xOffset, y: (member.generation - 1) * 180 },
+        position,
         style: { 
           background: member.gender === 'NỮ' ? '#fff1f2' : (member.generation === 1 ? 'var(--primary-color)' : 'white'), 
           color: (member.generation === 1 && member.gender !== 'NỮ') ? 'white' : 'var(--text-primary)',

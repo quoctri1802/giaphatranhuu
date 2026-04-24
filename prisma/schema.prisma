@@ -22,6 +22,8 @@ model Person {
   avatarUrl     String?
   generation    Int
   branch        String?  
+  posX          Float?
+  posY          Float?
   
   // Quan hệ huyết thống (Cha/Mẹ - Con)
   parents       Person[] @relation("ParentChild")

@@ -8,11 +8,15 @@ import { X, Calendar, User, Book } from 'lucide-react';
 export default function TreePage() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     try {
+      const authRes = await fetch('/api/auth/me');
+      if (authRes.ok) setUser(await authRes.json());
+
       const res = await fetch('/api/members');
       const data = await res.json();
       if (data.nodes) {
@@ -29,6 +33,20 @@ export default function TreePage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const onNodeDragStop = async (_: any, node: Node) => {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'EDITOR')) return;
+    
+    await fetch('/api/members/position', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: node.id,
+        posX: node.position.x,
+        posY: node.position.y
+      })
+    });
+  };
 
   const onNodeClick = async (_: React.MouseEvent, node: Node) => {
     try {
@@ -79,6 +97,8 @@ export default function TreePage() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
+        onNodeDragStop={onNodeDragStop}
+        nodesDraggable={!!user}
         fitView
       >
         <Background color="#f1f5f9" gap={20} />
