@@ -64,8 +64,23 @@ export default function TreePage() {
       <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div className="animate-pulse" style={{ fontSize: '1.5rem', color: 'var(--primary-color)', fontWeight: 600 }}>
-            Đang tải dữ liệu gia phả...
+            Đang kết nối dữ liệu gia tộc...
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container" style={{ padding: '8rem 1rem', textAlign: 'center' }}>
+        <div className="glass animate-fade" style={{ padding: '4rem 2rem', maxWidth: '600px', margin: '0 auto' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '2rem' }}>🔒</div>
+          <h2 style={{ marginBottom: '1.5rem' }}>Quyền Truy Cập Bị Hạn Chế</h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', fontSize: '1.1rem' }}>
+            Vì lý do bảo mật và tôn trọng quyền riêng tư của dòng họ, chỉ những thành viên đã được cấp tài khoản mới có thể xem chi tiết Cây Gia Phả.
+          </p>
+          <a href="/login" className="btn btn-primary">Đăng nhập để xem</a>
         </div>
       </div>
     );
