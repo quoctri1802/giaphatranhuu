@@ -88,6 +88,27 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setMediaForm({ ...mediaForm, url: data.url });
+      }
+    } catch (err) {
+      alert('Lỗi khi tải ảnh lên!');
+    }
+  };
+
   const handleMediaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await fetch('/api/media', {
@@ -118,12 +139,13 @@ export default function AdminDashboard() {
 
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const method = isEditing ? 'PUT' : 'POST';
     const res = await fetch('/api/posts', {
-      method: 'POST',
+      method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postForm),
+      body: JSON.stringify(isEditing ? { ...postForm, id: editingId } : postForm),
     });
-    if (res.ok) { alert('Đã đăng bài!'); setShowForm(false); fetchData(); }
+    if (res.ok) { alert('Thành công!'); setShowForm(false); setIsEditing(false); setPostForm({ title: '', content: '', coverImage: '' }); fetchData(); }
   };
 
   const handleUserSubmit = async (e: React.FormEvent) => {
@@ -294,7 +316,10 @@ export default function AdminDashboard() {
                 <div style={{ padding: '1.5rem' }}>
                   <h4 style={{ marginBottom: '0.5rem' }}>{post.title}</h4>
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>{new Date(post.createdAt).toLocaleDateString()}</p>
-                  <button className="btn btn-outline" style={{ width: '100%', padding: '0.5rem' }}>Chỉnh sửa</button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button onClick={() => { setIsEditing(true); setEditingId(post.id); setPostForm(post); setShowForm(true); }} className="btn btn-outline" style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}>Sửa</button>
+                    <button onClick={async () => { if(confirm('Xóa bài viết này?')) { await fetch(`/api/posts?id=${post.id}`, {method:'DELETE'}); fetchData(); } }} className="btn btn-outline" style={{ color: '#ef4444', borderColor: '#ef4444', padding: '0.5rem', fontSize: '0.8rem' }}>Xóa</button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -459,21 +484,64 @@ export default function AdminDashboard() {
             {activeTab === 'media' ? (
               <form onSubmit={handleMediaSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <input placeholder="Tiêu đề ảnh/tư liệu" required value={mediaForm.title} onChange={e => setMediaForm({...mediaForm, title: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-                <input placeholder="URL hình ảnh" required value={mediaForm.url} onChange={e => setMediaForm({...mediaForm, url: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                
+                <div style={{ border: '2px dashed var(--accent-color)', padding: '2rem', borderRadius: '8px', textAlign: 'center', backgroundColor: '#fcfaf7' }}>
+                  {mediaForm.url ? (
+                    <div style={{ position: 'relative' }}>
+                      <img src={mediaForm.url} style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px' }} alt="Preview" />
+                      <button type="button" onClick={() => setMediaForm({...mediaForm, url: ''})} style={{ position: 'absolute', top: -10, right: -10, backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '25px', height: '25px', cursor: 'pointer' }}>X</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <input type="file" accept="image/*" id="file-upload" onChange={handleFileUpload} style={{ display: 'none' }} />
+                      <label htmlFor="file-upload" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                        <UserPlus size={32} color="var(--accent-color)" />
+                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>Nhấn để chọn ảnh từ thiết bị</span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Hỗ trợ JPG, PNG, WEBP</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
                 <select value={mediaForm.category} onChange={e => setMediaForm({...mediaForm, category: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }}>
                   <option value="GIO_TOC">Lễ Giỗ Tộc</option>
                   <option value="KHANH_THANH">Khánh thành Nhà thờ</option>
                   <option value="TU_LIEU_CO">Tư liệu cổ</option>
                   <option value="HOAT_DONG">Hoạt động khác</option>
                 </select>
-                <button type="submit" className="btn btn-primary">Thêm vào thư viện</button>
+                <button type="submit" className="btn btn-primary" disabled={!mediaForm.url}>Thêm vào thư viện</button>
               </form>
             ) : activeTab === 'posts' ? (
               <form onSubmit={handlePostSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                 <input placeholder="Tiêu đề bài viết" required value={postForm.title} onChange={e => setPostForm({...postForm, title: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-                <input placeholder="URL ảnh bìa (Tùy chọn)" value={postForm.coverImage} onChange={e => setPostForm({...postForm, coverImage: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
+                
+                <div style={{ border: '2px dashed var(--accent-color)', padding: '1.5rem', borderRadius: '8px', textAlign: 'center' }}>
+                  {postForm.coverImage ? (
+                    <div style={{ position: 'relative' }}>
+                      <img src={postForm.coverImage} style={{ width: '100%', maxHeight: '150px', objectFit: 'cover', borderRadius: '4px' }} alt="Cover" />
+                      <button type="button" onClick={() => setPostForm({...postForm, coverImage: ''})} style={{ position: 'absolute', top: -10, right: -10, backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '25px', height: '25px', cursor: 'pointer' }}>X</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <input type="file" accept="image/*" id="post-cover-upload" onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                          const data = await res.json();
+                          if (data.url) setPostForm({ ...postForm, coverImage: data.url });
+                        }
+                      }} style={{ display: 'none' }} />
+                      <label htmlFor="post-cover-upload" style={{ cursor: 'pointer' }}>
+                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>Tải ảnh bìa bài viết</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
                 <textarea placeholder="Nội dung bài viết..." rows={10} required value={postForm.content} onChange={e => setPostForm({...postForm, content: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-                <button type="submit" className="btn btn-primary">Đăng bài</button>
+                <button type="submit" className="btn btn-primary">{isEditing ? 'Cập nhật bài viết' : 'Đăng bài viết'}</button>
               </form>
             ) : activeTab === 'users' ? (
               <form onSubmit={handleUserSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
