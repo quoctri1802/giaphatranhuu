@@ -171,6 +171,7 @@ export default function AdminDashboard() {
         <button onClick={() => setActiveTab('members')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'members' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'members' ? '2px solid var(--primary-color)' : 'none' }}>Thành viên</button>
         <button onClick={() => setActiveTab('posts')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'posts' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'posts' ? '2px solid var(--primary-color)' : 'none' }}>Bài viết & Tin tức</button>
         <button onClick={() => setActiveTab('media')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'media' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'media' ? '2px solid var(--primary-color)' : 'none' }}>Thư viện</button>
+        <button onClick={() => setActiveTab('anniversaries')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'anniversaries' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'anniversaries' ? '2px solid var(--primary-color)' : 'none' }}>Lịch Giỗ</button>
         <button onClick={() => setActiveTab('requests')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'requests' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'requests' ? '2px solid var(--primary-color)' : 'none' }}>Yêu cầu ({registrations.filter(r => r.status === 'PENDING').length})</button>
         <button onClick={() => setActiveTab('content')} style={{ background: 'none', border: 'none', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600, color: activeTab === 'content' ? 'var(--primary-color)' : 'var(--text-secondary)', borderBottom: activeTab === 'content' ? '2px solid var(--primary-color)' : 'none' }}>Nội dung trang</button>
         {user?.role === 'ADMIN' && (
@@ -330,6 +331,57 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Tab Content: Anniversaries Management */}
+      {activeTab === 'anniversaries' && (
+        <div className="glass animate-fade" style={{ padding: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
+            <h3>Quản lý Ngày Giỗ Dòng Họ</h3>
+            <p style={{ color: 'var(--text-secondary)' }}>Nhập ngày giỗ theo định dạng <strong>Ngày/Tháng</strong> (VD: 12/03)</p>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--accent-color)' }}>
+                <th style={{ padding: '1rem' }}>Thành viên</th>
+                <th style={{ padding: '1rem' }}>Đời thứ</th>
+                <th style={{ padding: '1rem' }}>Ngày giỗ Âm lịch</th>
+                <th style={{ padding: '1rem' }}>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(m => (
+                <tr key={m.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
+                  <td style={{ padding: '1rem', fontWeight: 600 }}>{m.fullName}</td>
+                  <td style={{ padding: '1rem' }}>{m.generation}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <input 
+                      defaultValue={m.deathDateLunar || ''} 
+                      onBlur={async (e) => {
+                        const val = e.target.value;
+                        if (val !== m.deathDateLunar) {
+                          await fetch('/api/members', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ...m, deathDateLunar: val })
+                          });
+                          fetchData();
+                        }
+                      }}
+                      placeholder="dd/mm" 
+                      style={{ padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid #ddd', width: '100px' }} 
+                    />
+                  </td>
+                  <td style={{ padding: '1rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: m.deathDateLunar ? '#10b981' : '#ef4444' }}>
+                      {m.deathDateLunar ? '● Đã có' : '○ Chưa có'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
