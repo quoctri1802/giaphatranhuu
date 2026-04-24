@@ -2,7 +2,7 @@ import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 export async function POST(request: Request) {
   try {
@@ -29,7 +29,9 @@ export async function POST(request: Request) {
       try {
         await mkdir(uploadDir, { recursive: true });
       } catch (e) {}
-      const uniqueName = `${uuidv4()}-${file.name}`;
+      
+      // Sử dụng randomUUID() có sẵn trong Node.js crypto
+      const uniqueName = `${randomUUID()}-${file.name}`;
       const path = join(uploadDir, uniqueName);
       await writeFile(path, buffer);
       return NextResponse.json({ url: `/uploads/${uniqueName}` });
