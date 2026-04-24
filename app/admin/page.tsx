@@ -4,13 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { Users, UserPlus, FileEdit, Settings, Search, X, ShieldCheck, LogOut, Clock } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, members, posts, users, media, requests
+  const [activeTab, setActiveTab] = useState('overview'); // overview, members, posts, users, media, requests, anniversaries, content
   const [showForm, setShowForm] = useState(false);
   const [members, setMembers] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [media, setMedia] = useState<any[]>([]);
-  const [registrations, setRegistrations] = useState<any[]>([]);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [anniversaryList, setAnniversaryList] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
@@ -229,8 +228,8 @@ export default function AdminDashboard() {
               <h3 style={{ marginBottom: '2rem' }}><Clock size={20} /> Ngày giỗ sắp tới (Âm lịch)</h3>
               {stats.anniversaries?.map((a: any) => (
                 <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 0', borderBottom: '1px solid var(--accent-color)' }}>
-                  <span style={{ fontWeight: 600 }}>{a.fullName}</span>
-                  <span style={{ color: 'var(--secondary-color)', fontWeight: 700 }}>{a.deathDateLunar}</span>
+                  <span style={{ fontWeight: 600 }}>{a.title}</span>
+                  <span style={{ color: 'var(--secondary-color)', fontWeight: 700 }}>{a.dateLunar}</span>
                 </div>
               ))}
               {(!stats.anniversaries || stats.anniversaries.length === 0) && (
@@ -282,7 +281,7 @@ export default function AdminDashboard() {
       {/* Tab Content: Posts */}
       {activeTab === 'posts' && (
         <div className="animate-fade">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
+          <div style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', display: 'grid', gap: '2rem' }}>
             <div className="glass" onClick={() => { setIsEditing(false); setShowForm(true); }} style={{ border: '2px dashed var(--accent-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '200px', cursor: 'pointer' }}>
               <UserPlus size={32} color="var(--text-secondary)" />
               <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Viết bài mới</p>
@@ -290,7 +289,7 @@ export default function AdminDashboard() {
             {posts.map(post => (
               <div key={post.id} className="glass" style={{ overflow: 'hidden' }}>
                 <div style={{ height: '150px', backgroundColor: 'var(--accent-color)' }}>
-                  {post.coverImage && <img src={post.coverImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  {post.coverImage && <img src={post.coverImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={post.title} />}
                 </div>
                 <div style={{ padding: '1.5rem' }}>
                   <h4 style={{ marginBottom: '0.5rem' }}>{post.title}</h4>
@@ -303,7 +302,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Tab Content: Page Content */}
+      {/* Tab Content: Content Management */}
       {activeTab === 'content' && (
         <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
           <div className="glass" style={{ padding: '2rem' }}>
@@ -313,19 +312,6 @@ export default function AdminDashboard() {
               <input placeholder="Tiêu đề phụ" value={pageContent.home?.heroSubtitle || ''} onChange={e => setPageContent({...pageContent, home: {...pageContent.home, heroSubtitle: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
               <textarea placeholder="Nội dung giới thiệu" rows={4} value={pageContent.home?.introContent || ''} onChange={e => setPageContent({...pageContent, home: {...pageContent.home, introContent: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
               <button className="btn btn-primary" onClick={() => handleSaveContent('home')}>Lưu Trang chủ</button>
-            </div>
-          </div>
-
-          <div className="glass" style={{ padding: '2rem' }}>
-            <h3 style={{ marginBottom: '1.5rem' }}>Chỉnh sửa Trang Lịch sử</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <textarea placeholder="Mở đầu" rows={4} value={pageContent.history?.intro || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, intro: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <input placeholder="Tiêu đề Cụ Tổ" value={pageContent.history?.founderTitle || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, founderTitle: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <textarea placeholder="Nội dung Cụ Tổ" rows={4} value={pageContent.history?.founderContent || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, founderContent: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <input placeholder="Tiêu đề Biển Cả" value={pageContent.history?.seaTitle || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, seaTitle: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <textarea placeholder="Nội dung Biển Cả" rows={4} value={pageContent.history?.seaContent || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, seaContent: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <input placeholder="URL hình ảnh Lịch sử" value={pageContent.history?.imageUrl || ''} onChange={e => setPageContent({...pageContent, history: {...pageContent.history, imageUrl: e.target.value}})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
-              <button className="btn btn-primary" onClick={() => handleSaveContent('history')}>Lưu Trang Lịch sử</button>
             </div>
           </div>
         </div>
@@ -427,6 +413,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* Tab Content: Users */}
       {activeTab === 'users' && user?.role === 'ADMIN' && (
         <div className="glass animate-fade" style={{ padding: '2rem' }}>
           <h3>Quản lý tài khoản truy cập</h3>
@@ -501,7 +488,6 @@ export default function AdminDashboard() {
               </form>
             ) : (
               <form onSubmit={handleMemberSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                {/* Member Form Fields similar to previous implementation */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <input placeholder="Họ và tên" required value={memberForm.fullName} onChange={e => setMemberForm({...memberForm, fullName: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />
                   <input placeholder="Tên gọi khác" value={memberForm.otherName} onChange={e => setMemberForm({...memberForm, otherName: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ddd' }} />

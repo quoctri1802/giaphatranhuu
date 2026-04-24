@@ -7,8 +7,12 @@ export const dynamic = 'force-dynamic';
 async function isAdmin() {
   const session = cookies().get('auth_session');
   if (!session) return false;
-  const user = JSON.parse(session.value);
-  return user.role === 'ADMIN' || user.role === 'EDITOR';
+  try {
+    const user = JSON.parse(session.value);
+    return user.role === 'ADMIN' || user.role === 'EDITOR';
+  } catch {
+    return false;
+  }
 }
 
 export async function GET() {
