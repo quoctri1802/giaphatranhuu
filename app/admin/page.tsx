@@ -589,16 +589,29 @@ export default function AdminDashboard() {
                     <div>
                       <input type="file" accept="image/*" id="post-cover-upload" onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (file) {
-                          const formData = new FormData();
-                          formData.append('file', file);
+                        if (!file) return;
+                        if (file.size > 4.5 * 1024 * 1024) {
+                          alert('Ảnh quá lớn (trên 4.5MB). Vui lòng chọn ảnh khác.');
+                          return;
+                        }
+                        setUploading(true);
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        try {
                           const res = await fetch('/api/upload', { method: 'POST', body: formData });
                           const data = await res.json();
                           if (data.url) setPostForm({ ...postForm, coverImage: data.url });
+                          else alert('Lỗi tải ảnh bìa: ' + (data.error || 'Không rõ nguyên nhân'));
+                        } catch (err) {
+                          alert('Lỗi kết nối khi tải ảnh bìa!');
+                        } finally {
+                          setUploading(false);
                         }
                       }} style={{ display: 'none' }} />
                       <label htmlFor="post-cover-upload" style={{ cursor: 'pointer' }}>
-                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>Tải ảnh bìa bài viết</span>
+                        <span style={{ fontWeight: 600, color: 'var(--primary-color)' }}>
+                          {uploading ? 'Đang tải ảnh...' : 'Tải ảnh bìa bài viết'}
+                        </span>
                       </label>
                     </div>
                   )}
