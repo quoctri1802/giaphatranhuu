@@ -21,8 +21,10 @@ export async function POST(request: Request) {
         }, { status: 500 });
       }
 
+      // Thêm addRandomSuffix: true để tránh lỗi trùng tên file
       const blob = await put(file.name, file, {
         access: 'public',
+        addRandomSuffix: true, 
       });
       return NextResponse.json({ url: blob.url });
     } 
