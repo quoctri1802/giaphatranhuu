@@ -429,7 +429,45 @@ export default function AdminDashboard() {
                   <td style={{ padding: '1rem' }}>{r.email}<br/><span style={{fontSize:'0.8rem'}}>{r.phone}</span></td>
                   <td style={{ padding: '1rem', maxWidth: '300px' }}>{r.message}</td>
                   <td style={{ padding: '1rem' }}>
-                    <span style={{ backgroundColor: r.status === 'PENDING' ? '#fef9c3' : '#dcfce7', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem' }}>{r.status}</span>
+                    {r.status === 'PENDING' ? (
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                          onClick={async () => {
+                            if (confirm(`Phê duyệt tài khoản cho ${r.fullName}?`)) {
+                              await fetch('/api/register', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: r.id, status: 'APPROVED' })
+                              });
+                              alert('Đã phê duyệt và tạo tài khoản thành công!');
+                              fetchData();
+                            }
+                          }}
+                          style={{ backgroundColor: '#10b981', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                        >
+                          Duyệt
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            if (confirm('Từ chối yêu cầu này?')) {
+                              await fetch('/api/register', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: r.id, status: 'REJECTED' })
+                              });
+                              fetchData();
+                            }
+                          }}
+                          style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                        >
+                          Từ chối
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ backgroundColor: r.status === 'APPROVED' ? '#dcfce7' : '#fee2e2', color: r.status === 'APPROVED' ? '#166534' : '#991b1b', padding: '0.3rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                        {r.status === 'APPROVED' ? 'Đã duyệt' : 'Đã từ chối'}
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
