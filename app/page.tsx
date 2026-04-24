@@ -27,7 +27,7 @@ export default function Home() {
         justifyContent: 'center', 
         alignItems: 'center',
         textAlign: 'center',
-        background: 'linear-gradient(rgba(26, 54, 93, 0.4), rgba(26, 54, 93, 0.4)), url("/hero-bg.jpg") center/cover',
+        background: 'linear-gradient(rgba(26, 54, 93, 0.4), rgba(26, 54, 93, 0.4)), url("/hero-bg.png") center/cover',
         color: 'white',
         borderRadius: '0 0 60px 60px',
         margin: '0',
