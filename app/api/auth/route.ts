@@ -3,8 +3,12 @@ import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function POST(request: Request) {
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: 'Database URL not configured' }, { status: 500 });
+  }
   try {
     const { email, password } = await request.json();
 

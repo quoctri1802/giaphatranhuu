@@ -3,8 +3,10 @@ import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function canEdit() {
+  if (!process.env.DATABASE_URL) return false;
   const session = cookies().get('auth_session');
   if (!session) return false;
   const user = JSON.parse(session.value);
